@@ -12,18 +12,28 @@ namespace Speed_Connection
 {
     public class SpeedChecker
     {
-
         private string selectedServerUrl;
+        private TestParameters testParameters;
 
-    public void SetServerUrl(string serverUrl)
-    {
-        selectedServerUrl = serverUrl;
-    }
+        public SpeedChecker()
+        {
+            testParameters = new TestParameters();
+        }
+
+        public void SetServerUrl(string serverUrl)
+        {
+            selectedServerUrl = serverUrl;
+        }
+
+        public void SetTestParameters(TestParameters parameters)
+        {
+            testParameters = parameters;
+        }
 
         public async Task<double> CheckDownloadSpeed()
         {
-            var speed = await FastClient.GetDownloadSpeed(SpeedTest.Net.Enums.SpeedTestUnit.MegaBitsPerSecond);
-            return Math.Round(speed.Speed, 2);
+            var speed = await FastClient.GetDownloadSpeed();
+            return Math.Round(speed.Speed/100, 2);
         }
 
         public double CheckNetworkInterfaceSpeed()
@@ -53,7 +63,6 @@ namespace Speed_Connection
             }
             File.Delete(@"test.js");
             return Math.Round(speeds.Average() * 0.008f, 2);
-
         }
     }
 }

@@ -18,20 +18,22 @@ namespace Speed_Connection
 
         private SpeedChecker speedChecker;
         private List<SpeedHistoryItem> speedHistory;
+        private TestParameters testParameters;
 
         public MainWindow()
         {
             InitializeComponent();
             speedChecker = new SpeedChecker();
             speedHistory = new List<SpeedHistoryItem>();
+            testParameters = new TestParameters();
             CheckSpeed();
         }
 
         private async void CheckSpeed()
         {
             string selectedServerUrl = (ServerComboBox.SelectedItem as ComboBoxItem)?.Tag?.ToString();
-
             speedChecker.SetServerUrl(selectedServerUrl);
+            speedChecker.SetTestParameters(testParameters);
 
             double downloadSpeed = await speedChecker.CheckDownloadSpeed();
             double networkInterfaceSpeed = speedChecker.CheckNetworkInterfaceSpeed();
@@ -52,6 +54,14 @@ namespace Speed_Connection
             UpdateHistoryListView();
         }
 
+        private void RunTestButton_Click(object sender, RoutedEventArgs e)
+        {
+            testParameters.DataSize = int.Parse(DataSizeTextBox.Text);
+            testParameters.Repetitions = int.Parse(RepetitionsTextBox.Text);
+
+            CheckSpeed();
+        }
+
         private void UpdateHistoryListView()
         {
             HistoryListView.ItemsSource = null;
@@ -68,9 +78,26 @@ namespace Speed_Connection
             CheckSpeed(); 
         }
 
-        private void RunTestButton_Click(object sender, RoutedEventArgs e)
+        private void ExportButton_Click(object sender, RoutedEventArgs e)
         {
-            CheckSpeed();
+            ExportWindow exportWindow = new ExportWindow();
+            bool? result = exportWindow.ShowDialog();
+
+            if (result == true)
+            {
+                string exportDirectory = exportWindow.SelectedDirectory;
+
+                string filePath = Path.Combine(exportDirectory, "SpeedTestResults.txt");
+                using (StreamWriter writer = new StreamWriter(filePath))
+                {
+                    foreach (var item in speedHistory)
+                    {
+                        writer.WriteLine($"Timestamp: {item.Timestamp}, Download Speed: {item.DownloadSpeed} Mbps, Network Interface Speed: {item.NetworkInterfaceSpeed} Mbps, WebClient Speed: {item.WebClientSpeed} Mbps");
+                    }
+                }
+
+                MessageBox.Show($"Results exported to: {filePath}");
+            }
         }
     }
 }
