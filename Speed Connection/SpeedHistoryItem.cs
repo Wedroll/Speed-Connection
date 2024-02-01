@@ -13,6 +13,6 @@ namespace Speed_Connection
         public double DownloadSpeed { get; set; }
         public double NetworkInterfaceSpeed { get; set; }
         public double WebClientSpeed { get; set; }
-
+        public double Ping { get; internal set; }
     }
 }

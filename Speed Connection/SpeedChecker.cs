@@ -64,5 +64,34 @@ namespace Speed_Connection
             File.Delete(@"test.js");
             return Math.Round(speeds.Average() * 0.008f, 2);
         }
+
+        public async Task<double> CheckPing()
+        {
+            if (string.IsNullOrWhiteSpace(selectedServerUrl))
+            {
+                return 0.0;
+            }
+
+            Uri serverUri;
+            if (Uri.TryCreate(selectedServerUrl, UriKind.Absolute, out serverUri))
+            {
+                using (Ping ping = new Ping())
+                {
+                    try
+                    {
+                        PingReply reply = await ping.SendPingAsync(serverUri.Host);
+                        return reply.RoundtripTime;
+                    }
+                    catch (PingException)
+                    {
+                        return 0.0; 
+                    }
+                }
+            }
+            else
+            {
+                return 0.0;
+            }
+        }
     }
 }

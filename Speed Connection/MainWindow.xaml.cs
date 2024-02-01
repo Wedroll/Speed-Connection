@@ -38,21 +38,25 @@ namespace Speed_Connection
             double downloadSpeed = await speedChecker.CheckDownloadSpeed();
             double networkInterfaceSpeed = speedChecker.CheckNetworkInterfaceSpeed();
             double webClientSpeed = speedChecker.CheckWebClientSpeed();
+            double ping = await speedChecker.CheckPing(); 
 
             DownloadSpeedTxt.Text = $"Download Speed: {downloadSpeed} Mbps";
             NetworkSpeedTxt.Text = $"Network Interface Speed: {networkInterfaceSpeed} Mbps";
             WebClientSpeedTxt.Text = $"Web Client Speed: {webClientSpeed} Mbps";
+            PingTxt.Text = $"Ping: {ping} ms"; 
 
             speedHistory.Add(new SpeedHistoryItem
             {
                 Timestamp = DateTime.Now,
                 DownloadSpeed = downloadSpeed,
                 NetworkInterfaceSpeed = networkInterfaceSpeed,
-                WebClientSpeed = webClientSpeed
+                WebClientSpeed = webClientSpeed,
+                Ping = ping 
             });
 
             UpdateHistoryListView();
         }
+
 
         private void RunTestButton_Click(object sender, RoutedEventArgs e)
         {
